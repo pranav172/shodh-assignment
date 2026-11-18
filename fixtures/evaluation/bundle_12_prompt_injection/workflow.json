@@ -1,0 +1,92 @@
+{
+  "workflow_id": "WF-12",
+  "version": 1,
+  "entry_node_id": "N1",
+  "nodes": {
+    "N1": {
+      "node_id": "N1",
+      "type": "decision",
+      "rule_id": "R1",
+      "condition": {
+        "type": "atomic",
+        "field": "category",
+        "operator": "is_null"
+      }
+    },
+    "ACT_MANUAL": {
+      "node_id": "ACT_MANUAL",
+      "type": "action",
+      "action": "manual_review"
+    },
+    "N2": {
+      "node_id": "N2",
+      "type": "decision",
+      "rule_id": "R2",
+      "condition": {
+        "type": "atomic",
+        "field": "urgent",
+        "operator": "==",
+        "value": true
+      }
+    },
+    "ACT_PRIORITY": {
+      "node_id": "ACT_PRIORITY",
+      "type": "action",
+      "action": "priority"
+    },
+    "N3": {
+      "node_id": "N3",
+      "type": "decision",
+      "rule_id": "R3",
+      "condition": {
+        "type": "atomic",
+        "field": "waiting_minutes",
+        "operator": ">=",
+        "value": 30,
+        "unit": "minutes"
+      }
+    },
+    "ACT_ESCALATE": {
+      "node_id": "ACT_ESCALATE",
+      "type": "action",
+      "action": "escalation"
+    },
+    "ACT_NORMAL": {
+      "node_id": "ACT_NORMAL",
+      "type": "action",
+      "action": "normal"
+    }
+  },
+  "edges": [
+    {
+      "source_node_id": "N1",
+      "target_node_id": "ACT_MANUAL",
+      "branch": "true"
+    },
+    {
+      "source_node_id": "N1",
+      "target_node_id": "N2",
+      "branch": "false"
+    },
+    {
+      "source_node_id": "N2",
+      "target_node_id": "ACT_PRIORITY",
+      "branch": "true"
+    },
+    {
+      "source_node_id": "N2",
+      "target_node_id": "N3",
+      "branch": "false"
+    },
+    {
+      "source_node_id": "N3",
+      "target_node_id": "ACT_ESCALATE",
+      "branch": "true"
+    },
+    {
+      "source_node_id": "N3",
+      "target_node_id": "ACT_NORMAL",
+      "branch": "false"
+    }
+  ]
+}

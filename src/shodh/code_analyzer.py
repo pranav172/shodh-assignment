@@ -206,6 +206,13 @@ class CodeAnalyzer:
             elif isinstance(op, (ast.IsNot, ast.NotEq)):
                 return AtomicCondition(field=field, operator=Operator.IS_NOT_NULL)
 
+        # Boolean identity check (e.g. ticket.get("urgent") is True)
+        if isinstance(val_node, ast.Constant) and isinstance(val_node.value, bool):
+            if isinstance(op, (ast.Is, ast.Eq)):
+                return AtomicCondition(field=field, operator=Operator.EQ, value=val_node.value)
+            elif isinstance(op, (ast.IsNot, ast.NotEq)):
+                return AtomicCondition(field=field, operator=Operator.NE, value=val_node.value)
+
         # Constant value
         val: Any = None
         if isinstance(val_node, ast.Constant):

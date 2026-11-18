@@ -100,6 +100,10 @@ def route_ticket_by_requirements(
     Returns (action, matched_rule_id) or None.
     """
     for req in sorted(requirements, key=lambda r: r.priority):
+        if isinstance(req.condition, UnsupportedCondition):
+            # If an unreviewed / ambiguous condition exists in the chain,
+            # deterministic simulation is interrupted to avoid generating false counterexamples.
+            return None
         if req.is_fallback or eval_condition(req.condition, ticket):
             return req.action, req.rule_id
     return None
@@ -161,6 +165,12 @@ class SpecificationChecker:
 
         for req in effective_requirements:
             rule_id = req.rule_id
+
+            # If requirement condition is unsupported / ambiguous, it belongs to unreviewed scope
+            # and cannot deterministically assert specification compliance or omission.
+            if isinstance(req.condition, UnsupportedCondition):
+                continue
+
             spec_rule = spec_by_target.get(rule_id)
 
             # 1. Missing / Omitted Requirement

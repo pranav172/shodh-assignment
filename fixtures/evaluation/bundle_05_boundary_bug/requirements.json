@@ -1,0 +1,62 @@
+{
+  "doc_id": "REQ-05",
+  "version": 1,
+  "rules": [
+    {
+      "rule_id": "R1",
+      "source": "support_policy.md",
+      "line_start": 1,
+      "line_end": 1,
+      "priority": 1,
+      "condition": {
+        "type": "atomic",
+        "field": "category",
+        "operator": "is_null"
+      },
+      "action": "manual_review",
+      "raw_text": "Missing category -> manual review."
+    },
+    {
+      "rule_id": "R2",
+      "source": "support_policy.md",
+      "line_start": 2,
+      "line_end": 2,
+      "priority": 2,
+      "condition": {
+        "type": "atomic",
+        "field": "urgent",
+        "operator": "==",
+        "value": true
+      },
+      "action": "priority",
+      "raw_text": "Otherwise, urgent ticket -> priority queue."
+    },
+    {
+      "rule_id": "R3",
+      "source": "support_policy.md",
+      "line_start": 3,
+      "line_end": 3,
+      "priority": 3,
+      "condition": {
+        "type": "atomic",
+        "field": "waiting_minutes",
+        "operator": ">=",
+        "value": 30,
+        "unit": "minutes"
+      },
+      "action": "escalation",
+      "raw_text": "Otherwise, waiting >= 30 minutes -> escalation."
+    },
+    {
+      "rule_id": "R4",
+      "source": "support_policy.md",
+      "line_start": 4,
+      "line_end": 4,
+      "priority": 4,
+      "condition": null,
+      "action": "normal",
+      "is_fallback": true,
+      "raw_text": "All remaining tickets -> normal queue."
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+[
+  {
+    "change_id": "CHG-A",
+    "target_rule_id": "R3",
+    "target_version": 1,
+    "status": "APPROVED",
+    "author": "alice@co.com",
+    "timestamp": "2026-03-01T10:00:00Z",
+    "patch": {
+      "condition": {
+        "value": 25
+      }
+    }
+  },
+  {
+    "change_id": "CHG-B",
+    "target_rule_id": "R3",
+    "target_version": 1,
+    "status": "APPROVED",
+    "author": "bob@co.com",
+    "timestamp": "2026-03-01T10:00:00Z",
+    "patch": {
+      "condition": {
+        "value": 20
+      }
+    }
+  }
+]

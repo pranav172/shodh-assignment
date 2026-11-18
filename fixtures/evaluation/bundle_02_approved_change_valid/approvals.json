@@ -1,0 +1,15 @@
+[
+  {
+    "change_id": "CHG-25",
+    "target_rule_id": "R3",
+    "target_version": 1,
+    "status": "APPROVED",
+    "author": "ops@co.com",
+    "timestamp": "2026-03-01T09:00:00Z",
+    "patch": {
+      "condition": {
+        "value": 25
+      }
+    }
+  }
+]

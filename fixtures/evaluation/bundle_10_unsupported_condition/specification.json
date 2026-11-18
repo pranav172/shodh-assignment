@@ -1,0 +1,50 @@
+{
+  "spec_id": "SPEC-10",
+  "version": 1,
+  "rules": [
+    {
+      "spec_rule_id": "S1",
+      "target_rule_id": "R1",
+      "priority": 1,
+      "condition": {
+        "type": "atomic",
+        "field": "category",
+        "operator": "is_null"
+      },
+      "action": "manual_review"
+    },
+    {
+      "spec_rule_id": "S2",
+      "target_rule_id": "R2",
+      "priority": 2,
+      "condition": {
+        "type": "atomic",
+        "field": "urgent",
+        "operator": "==",
+        "value": true
+      },
+      "action": "priority"
+    },
+    {
+      "spec_rule_id": "S3",
+      "target_rule_id": "R3",
+      "priority": 3,
+      "condition": {
+        "type": "atomic",
+        "field": "waiting_minutes",
+        "operator": ">=",
+        "value": 30,
+        "unit": "minutes"
+      },
+      "action": "escalation"
+    },
+    {
+      "spec_rule_id": "S4",
+      "target_rule_id": "R4",
+      "priority": 4,
+      "condition": null,
+      "action": "normal",
+      "is_fallback": true
+    }
+  ]
+}

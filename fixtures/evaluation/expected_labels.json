@@ -1,0 +1,62 @@
+{
+  "bundle_01_canonical_valid": {
+    "description": "Canonical 4-rule valid ticket routing workflow",
+    "expected_status": "PASS",
+    "held_out": false
+  },
+  "bundle_02_approved_change_valid": {
+    "description": "Valid workflow with approved SLA reduction to 25m",
+    "expected_status": "PASS",
+    "held_out": false
+  },
+  "bundle_03_reordered_paraphrase_valid": {
+    "description": "Valid workflow using inverted AST comparison 30 <= waiting",
+    "expected_status": "PASS",
+    "held_out": false
+  },
+  "bundle_04_precedence_bug": {
+    "description": "Code checks urgency before missing category",
+    "expected_status": "CHANGES_REQUIRED",
+    "held_out": false
+  },
+  "bundle_05_boundary_bug": {
+    "description": "Code and spec use > 30 instead of >= 30",
+    "expected_status": "CHANGES_REQUIRED",
+    "held_out": false
+  },
+  "bundle_06_unapproved_change": {
+    "description": "Developer modified code to 25m without approval",
+    "expected_status": "CHANGES_REQUIRED",
+    "held_out": false
+  },
+  "bundle_07_contradictory_approvals": {
+    "description": "Contradictory approval records targeting R3 simultaneously",
+    "expected_status": "CHANGES_REQUIRED",
+    "held_out": false
+  },
+  "bundle_08_graph_missing_branch": {
+    "description": "Workflow graph decision node N2 missing false branch edge",
+    "expected_status": "CHANGES_REQUIRED",
+    "held_out": false
+  },
+  "bundle_09_omitted_spec_requirement": {
+    "description": "Specification completely omits R1 manual review",
+    "expected_status": "CHANGES_REQUIRED",
+    "held_out": true
+  },
+  "bundle_10_unsupported_condition": {
+    "description": "Policy contains unverified subjective natural language",
+    "expected_status": "INCOMPLETE",
+    "held_out": true
+  },
+  "bundle_11_missing_spec_doc": {
+    "description": "Specification document not provided in review bundle",
+    "expected_status": "INCOMPLETE",
+    "held_out": true
+  },
+  "bundle_12_prompt_injection": {
+    "description": "Prompt injection attack in requirement text attempting to force PASS",
+    "expected_status": "INCOMPLETE",
+    "held_out": true
+  }
+}

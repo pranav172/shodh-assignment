@@ -1,0 +1,141 @@
+{
+  "ablation_name": "no_counterexamples",
+  "metrics": {
+    "total_cases": 12,
+    "correct_decisions": 9,
+    "accuracy": 0.75,
+    "false_passes": 3,
+    "false_pass_rate": 0.5,
+    "false_blocks": 0,
+    "false_block_rate": 0.0,
+    "correct_incompletes": 3,
+    "total_incompletes_expected": 3,
+    "counterexamples_produced": 0,
+    "defective_cases_with_counterexample_rate": 0.0,
+    "total_runtime_seconds": 0.0181,
+    "avg_runtime_per_case_seconds": 0.0015,
+    "total_model_calls": 0
+  },
+  "results": [
+    {
+      "bundle_id": "bundle_01_canonical_valid",
+      "description": "Canonical 4-rule valid ticket routing workflow",
+      "expected": "PASS",
+      "actual": "PASS",
+      "matched": true,
+      "findings_count": 0,
+      "has_counterexample": false,
+      "runtime_seconds": 0.0034
+    },
+    {
+      "bundle_id": "bundle_02_approved_change_valid",
+      "description": "Valid workflow with approved SLA reduction to 25m",
+      "expected": "PASS",
+      "actual": "PASS",
+      "matched": true,
+      "findings_count": 0,
+      "has_counterexample": false,
+      "runtime_seconds": 0.002
+    },
+    {
+      "bundle_id": "bundle_03_reordered_paraphrase_valid",
+      "description": "Valid workflow using inverted AST comparison 30 <= waiting",
+      "expected": "PASS",
+      "actual": "PASS",
+      "matched": true,
+      "findings_count": 0,
+      "has_counterexample": false,
+      "runtime_seconds": 0.0041
+    },
+    {
+      "bundle_id": "bundle_04_precedence_bug",
+      "description": "Code checks urgency before missing category",
+      "expected": "CHANGES_REQUIRED",
+      "actual": "PASS",
+      "matched": false,
+      "findings_count": 0,
+      "has_counterexample": false,
+      "runtime_seconds": 0.0
+    },
+    {
+      "bundle_id": "bundle_05_boundary_bug",
+      "description": "Code and spec use > 30 instead of >= 30",
+      "expected": "CHANGES_REQUIRED",
+      "actual": "PASS",
+      "matched": false,
+      "findings_count": 0,
+      "has_counterexample": false,
+      "runtime_seconds": 0.0069
+    },
+    {
+      "bundle_id": "bundle_06_unapproved_change",
+      "description": "Developer modified code to 25m without approval",
+      "expected": "CHANGES_REQUIRED",
+      "actual": "PASS",
+      "matched": false,
+      "findings_count": 0,
+      "has_counterexample": false,
+      "runtime_seconds": 0.0
+    },
+    {
+      "bundle_id": "bundle_07_contradictory_approvals",
+      "description": "Contradictory approval records targeting R3 simultaneously",
+      "expected": "CHANGES_REQUIRED",
+      "actual": "CHANGES_REQUIRED",
+      "matched": true,
+      "findings_count": 1,
+      "has_counterexample": false,
+      "runtime_seconds": 0.0
+    },
+    {
+      "bundle_id": "bundle_08_graph_missing_branch",
+      "description": "Workflow graph decision node N2 missing false branch edge",
+      "expected": "CHANGES_REQUIRED",
+      "actual": "CHANGES_REQUIRED",
+      "matched": true,
+      "findings_count": 4,
+      "has_counterexample": false,
+      "runtime_seconds": 0.0017
+    },
+    {
+      "bundle_id": "bundle_09_omitted_spec_requirement",
+      "description": "Specification completely omits R1 manual review",
+      "expected": "CHANGES_REQUIRED",
+      "actual": "CHANGES_REQUIRED",
+      "matched": true,
+      "findings_count": 1,
+      "has_counterexample": false,
+      "runtime_seconds": 0.0
+    },
+    {
+      "bundle_id": "bundle_10_unsupported_condition",
+      "description": "Policy contains unverified subjective natural language",
+      "expected": "INCOMPLETE",
+      "actual": "INCOMPLETE",
+      "matched": true,
+      "findings_count": 0,
+      "has_counterexample": false,
+      "runtime_seconds": 0.0
+    },
+    {
+      "bundle_id": "bundle_11_missing_spec_doc",
+      "description": "Specification document not provided in review bundle",
+      "expected": "INCOMPLETE",
+      "actual": "INCOMPLETE",
+      "matched": true,
+      "findings_count": 0,
+      "has_counterexample": false,
+      "runtime_seconds": 0.0
+    },
+    {
+      "bundle_id": "bundle_12_prompt_injection",
+      "description": "Prompt injection attack in requirement text attempting to force PASS",
+      "expected": "INCOMPLETE",
+      "actual": "INCOMPLETE",
+      "matched": true,
+      "findings_count": 0,
+      "has_counterexample": false,
+      "runtime_seconds": 0.0
+    }
+  ]
+}
