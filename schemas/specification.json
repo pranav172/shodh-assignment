@@ -1,0 +1,281 @@
+{
+  "$defs": {
+    "AtomicCondition": {
+      "description": "An individual comparison condition against a single ticket field.",
+      "properties": {
+        "type": {
+          "const": "atomic",
+          "default": "atomic",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "description": "Ticket attribute name (e.g., 'waiting_minutes', 'category', 'urgent')",
+          "title": "Field",
+          "type": "string"
+        },
+        "operator": {
+          "$ref": "#/$defs/Operator",
+          "description": "Comparison operator"
+        },
+        "value": {
+          "default": null,
+          "description": "Target value for comparison (null for is_null/is_not_null)",
+          "title": "Value"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional unit (e.g., 'minutes', 'hours')",
+          "title": "Unit"
+        }
+      },
+      "required": [
+        "field",
+        "operator"
+      ],
+      "title": "AtomicCondition",
+      "type": "object"
+    },
+    "CompoundCondition": {
+      "description": "Logical combination of conditions (AND / OR / NOT).",
+      "properties": {
+        "type": {
+          "const": "compound",
+          "default": "compound",
+          "title": "Type",
+          "type": "string"
+        },
+        "combinator": {
+          "description": "Logical combinator",
+          "enum": [
+            "and",
+            "or",
+            "not"
+          ],
+          "title": "Combinator",
+          "type": "string"
+        },
+        "conditions": {
+          "description": "Child conditions to combine",
+          "items": {
+            "discriminator": {
+              "mapping": {
+                "atomic": "#/$defs/AtomicCondition",
+                "compound": "#/$defs/CompoundCondition",
+                "unsupported": "#/$defs/UnsupportedCondition"
+              },
+              "propertyName": "type"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/AtomicCondition"
+              },
+              {
+                "$ref": "#/$defs/CompoundCondition"
+              },
+              {
+                "$ref": "#/$defs/UnsupportedCondition"
+              }
+            ]
+          },
+          "title": "Conditions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "combinator",
+        "conditions"
+      ],
+      "title": "CompoundCondition",
+      "type": "object"
+    },
+    "Operator": {
+      "description": "Supported comparison operators.",
+      "enum": [
+        "==",
+        "!=",
+        "<",
+        "<=",
+        ">",
+        ">=",
+        "is_null",
+        "is_not_null",
+        "in",
+        "not_in"
+      ],
+      "title": "Operator",
+      "type": "string"
+    },
+    "SpecificationRule": {
+      "description": "A developer or architect formalization of a business rule.",
+      "properties": {
+        "spec_rule_id": {
+          "description": "Identifier within the specification",
+          "title": "Spec Rule Id",
+          "type": "string"
+        },
+        "target_rule_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Target business rule ID (e.g., 'R1')",
+          "title": "Target Rule Id"
+        },
+        "priority": {
+          "description": "Evaluation precedence rank",
+          "title": "Priority",
+          "type": "integer"
+        },
+        "condition": {
+          "anyOf": [
+            {
+              "discriminator": {
+                "mapping": {
+                  "atomic": "#/$defs/AtomicCondition",
+                  "compound": "#/$defs/CompoundCondition",
+                  "unsupported": "#/$defs/UnsupportedCondition"
+                },
+                "propertyName": "type"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/AtomicCondition"
+                },
+                {
+                  "$ref": "#/$defs/CompoundCondition"
+                },
+                {
+                  "$ref": "#/$defs/UnsupportedCondition"
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Formal condition (None for default fallback)",
+          "title": "Condition"
+        },
+        "action": {
+          "description": "Target routing action",
+          "title": "Action",
+          "type": "string"
+        },
+        "evidence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Source line or ticket reference",
+          "title": "Evidence"
+        },
+        "is_fallback": {
+          "default": false,
+          "title": "Is Fallback",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "spec_rule_id",
+        "priority",
+        "action"
+      ],
+      "title": "SpecificationRule",
+      "type": "object"
+    },
+    "UnsupportedCondition": {
+      "description": "Preserves raw condition text that cannot be safely parsed into the supported domain.",
+      "properties": {
+        "type": {
+          "const": "unsupported",
+          "default": "unsupported",
+          "title": "Type",
+          "type": "string"
+        },
+        "raw_text": {
+          "description": "Original unparsed text",
+          "title": "Raw Text",
+          "type": "string"
+        },
+        "reason": {
+          "description": "Why the condition is unsupported or ambiguous",
+          "title": "Reason",
+          "type": "string"
+        },
+        "flag": {
+          "default": "UNSUPPORTED",
+          "enum": [
+            "UNSUPPORTED",
+            "AMBIGUOUS"
+          ],
+          "title": "Flag",
+          "type": "string"
+        }
+      },
+      "required": [
+        "raw_text",
+        "reason"
+      ],
+      "title": "UnsupportedCondition",
+      "type": "object"
+    }
+  },
+  "description": "The structured specification artifact.",
+  "properties": {
+    "spec_id": {
+      "description": "Identifier for this specification",
+      "title": "Spec Id",
+      "type": "string"
+    },
+    "version": {
+      "default": 1,
+      "title": "Version",
+      "type": "integer"
+    },
+    "requirements_doc_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Referenced requirements document ID",
+      "title": "Requirements Doc Id"
+    },
+    "rules": {
+      "items": {
+        "$ref": "#/$defs/SpecificationRule"
+      },
+      "title": "Rules",
+      "type": "array"
+    }
+  },
+  "required": [
+    "spec_id"
+  ],
+  "title": "SpecificationDocument",
+  "type": "object"
+}

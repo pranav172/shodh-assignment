@@ -1,0 +1,325 @@
+{
+  "$defs": {
+    "AtomicCondition": {
+      "description": "An individual comparison condition against a single ticket field.",
+      "properties": {
+        "type": {
+          "const": "atomic",
+          "default": "atomic",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "description": "Ticket attribute name (e.g., 'waiting_minutes', 'category', 'urgent')",
+          "title": "Field",
+          "type": "string"
+        },
+        "operator": {
+          "$ref": "#/$defs/Operator",
+          "description": "Comparison operator"
+        },
+        "value": {
+          "default": null,
+          "description": "Target value for comparison (null for is_null/is_not_null)",
+          "title": "Value"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional unit (e.g., 'minutes', 'hours')",
+          "title": "Unit"
+        }
+      },
+      "required": [
+        "field",
+        "operator"
+      ],
+      "title": "AtomicCondition",
+      "type": "object"
+    },
+    "CompoundCondition": {
+      "description": "Logical combination of conditions (AND / OR / NOT).",
+      "properties": {
+        "type": {
+          "const": "compound",
+          "default": "compound",
+          "title": "Type",
+          "type": "string"
+        },
+        "combinator": {
+          "description": "Logical combinator",
+          "enum": [
+            "and",
+            "or",
+            "not"
+          ],
+          "title": "Combinator",
+          "type": "string"
+        },
+        "conditions": {
+          "description": "Child conditions to combine",
+          "items": {
+            "discriminator": {
+              "mapping": {
+                "atomic": "#/$defs/AtomicCondition",
+                "compound": "#/$defs/CompoundCondition",
+                "unsupported": "#/$defs/UnsupportedCondition"
+              },
+              "propertyName": "type"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/AtomicCondition"
+              },
+              {
+                "$ref": "#/$defs/CompoundCondition"
+              },
+              {
+                "$ref": "#/$defs/UnsupportedCondition"
+              }
+            ]
+          },
+          "title": "Conditions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "combinator",
+        "conditions"
+      ],
+      "title": "CompoundCondition",
+      "type": "object"
+    },
+    "Operator": {
+      "description": "Supported comparison operators.",
+      "enum": [
+        "==",
+        "!=",
+        "<",
+        "<=",
+        ">",
+        ">=",
+        "is_null",
+        "is_not_null",
+        "in",
+        "not_in"
+      ],
+      "title": "Operator",
+      "type": "string"
+    },
+    "UnsupportedCondition": {
+      "description": "Preserves raw condition text that cannot be safely parsed into the supported domain.",
+      "properties": {
+        "type": {
+          "const": "unsupported",
+          "default": "unsupported",
+          "title": "Type",
+          "type": "string"
+        },
+        "raw_text": {
+          "description": "Original unparsed text",
+          "title": "Raw Text",
+          "type": "string"
+        },
+        "reason": {
+          "description": "Why the condition is unsupported or ambiguous",
+          "title": "Reason",
+          "type": "string"
+        },
+        "flag": {
+          "default": "UNSUPPORTED",
+          "enum": [
+            "UNSUPPORTED",
+            "AMBIGUOUS"
+          ],
+          "title": "Flag",
+          "type": "string"
+        }
+      },
+      "required": [
+        "raw_text",
+        "reason"
+      ],
+      "title": "UnsupportedCondition",
+      "type": "object"
+    },
+    "WorkflowEdge": {
+      "description": "A directed edge in the workflow graph.",
+      "properties": {
+        "source_node_id": {
+          "description": "Originating node ID",
+          "title": "Source Node Id",
+          "type": "string"
+        },
+        "target_node_id": {
+          "description": "Destination node ID",
+          "title": "Target Node Id",
+          "type": "string"
+        },
+        "branch": {
+          "description": "Branch label taken on condition outcome",
+          "enum": [
+            "true",
+            "false",
+            "default"
+          ],
+          "title": "Branch",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_node_id",
+        "target_node_id",
+        "branch"
+      ],
+      "title": "WorkflowEdge",
+      "type": "object"
+    },
+    "WorkflowNode": {
+      "description": "A node in the decision routing graph.",
+      "properties": {
+        "node_id": {
+          "description": "Unique node identifier",
+          "title": "Node Id",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/WorkflowNodeType",
+          "description": "'decision' or 'action'"
+        },
+        "rule_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Referenced rule ID if applicable",
+          "title": "Rule Id"
+        },
+        "condition": {
+          "anyOf": [
+            {
+              "discriminator": {
+                "mapping": {
+                  "atomic": "#/$defs/AtomicCondition",
+                  "compound": "#/$defs/CompoundCondition",
+                  "unsupported": "#/$defs/UnsupportedCondition"
+                },
+                "propertyName": "type"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/AtomicCondition"
+                },
+                {
+                  "$ref": "#/$defs/CompoundCondition"
+                },
+                {
+                  "$ref": "#/$defs/UnsupportedCondition"
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Condition to evaluate for decision nodes",
+          "title": "Condition"
+        },
+        "action": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Terminal action name for action nodes",
+          "title": "Action"
+        },
+        "evidence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Evidence location in workflow definition",
+          "title": "Evidence"
+        }
+      },
+      "required": [
+        "node_id",
+        "type"
+      ],
+      "title": "WorkflowNode",
+      "type": "object"
+    },
+    "WorkflowNodeType": {
+      "enum": [
+        "decision",
+        "action"
+      ],
+      "title": "WorkflowNodeType",
+      "type": "string"
+    }
+  },
+  "description": "A full workflow routing graph.",
+  "properties": {
+    "workflow_id": {
+      "description": "Unique workflow identifier",
+      "title": "Workflow Id",
+      "type": "string"
+    },
+    "version": {
+      "default": 1,
+      "title": "Version",
+      "type": "integer"
+    },
+    "entry_node_id": {
+      "description": "Entry decision node ID",
+      "title": "Entry Node Id",
+      "type": "string"
+    },
+    "nodes": {
+      "additionalProperties": {
+        "$ref": "#/$defs/WorkflowNode"
+      },
+      "description": "Dictionary of node_id -> WorkflowNode",
+      "title": "Nodes",
+      "type": "object"
+    },
+    "edges": {
+      "description": "List of directed branch edges",
+      "items": {
+        "$ref": "#/$defs/WorkflowEdge"
+      },
+      "title": "Edges",
+      "type": "array"
+    }
+  },
+  "required": [
+    "workflow_id",
+    "entry_node_id",
+    "nodes"
+  ],
+  "title": "WorkflowGraph",
+  "type": "object"
+}

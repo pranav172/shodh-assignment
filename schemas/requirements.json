@@ -1,0 +1,320 @@
+{
+  "$defs": {
+    "AtomicCondition": {
+      "description": "An individual comparison condition against a single ticket field.",
+      "properties": {
+        "type": {
+          "const": "atomic",
+          "default": "atomic",
+          "title": "Type",
+          "type": "string"
+        },
+        "field": {
+          "description": "Ticket attribute name (e.g., 'waiting_minutes', 'category', 'urgent')",
+          "title": "Field",
+          "type": "string"
+        },
+        "operator": {
+          "$ref": "#/$defs/Operator",
+          "description": "Comparison operator"
+        },
+        "value": {
+          "default": null,
+          "description": "Target value for comparison (null for is_null/is_not_null)",
+          "title": "Value"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional unit (e.g., 'minutes', 'hours')",
+          "title": "Unit"
+        }
+      },
+      "required": [
+        "field",
+        "operator"
+      ],
+      "title": "AtomicCondition",
+      "type": "object"
+    },
+    "CompoundCondition": {
+      "description": "Logical combination of conditions (AND / OR / NOT).",
+      "properties": {
+        "type": {
+          "const": "compound",
+          "default": "compound",
+          "title": "Type",
+          "type": "string"
+        },
+        "combinator": {
+          "description": "Logical combinator",
+          "enum": [
+            "and",
+            "or",
+            "not"
+          ],
+          "title": "Combinator",
+          "type": "string"
+        },
+        "conditions": {
+          "description": "Child conditions to combine",
+          "items": {
+            "discriminator": {
+              "mapping": {
+                "atomic": "#/$defs/AtomicCondition",
+                "compound": "#/$defs/CompoundCondition",
+                "unsupported": "#/$defs/UnsupportedCondition"
+              },
+              "propertyName": "type"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/AtomicCondition"
+              },
+              {
+                "$ref": "#/$defs/CompoundCondition"
+              },
+              {
+                "$ref": "#/$defs/UnsupportedCondition"
+              }
+            ]
+          },
+          "title": "Conditions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "combinator",
+        "conditions"
+      ],
+      "title": "CompoundCondition",
+      "type": "object"
+    },
+    "Operator": {
+      "description": "Supported comparison operators.",
+      "enum": [
+        "==",
+        "!=",
+        "<",
+        "<=",
+        ">",
+        ">=",
+        "is_null",
+        "is_not_null",
+        "in",
+        "not_in"
+      ],
+      "title": "Operator",
+      "type": "string"
+    },
+    "SourceRequirement": {
+      "description": "A single business policy requirement, anchored to source text.",
+      "properties": {
+        "rule_id": {
+          "description": "Unique rule identifier (e.g. 'R1', 'R2')",
+          "title": "Rule Id",
+          "type": "string"
+        },
+        "title": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Short human-readable title",
+          "title": "Title"
+        },
+        "source": {
+          "description": "Source file or document reference (e.g. 'support_policy.md')",
+          "title": "Source",
+          "type": "string"
+        },
+        "line_start": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Starting line in source document",
+          "title": "Line Start"
+        },
+        "line_end": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Ending line in source document",
+          "title": "Line End"
+        },
+        "version": {
+          "default": 1,
+          "description": "Version of the source requirement",
+          "title": "Version",
+          "type": "integer"
+        },
+        "priority": {
+          "description": "Precedence rank: lower integer evaluated first (1, 2, 3...)",
+          "title": "Priority",
+          "type": "integer"
+        },
+        "condition": {
+          "anyOf": [
+            {
+              "discriminator": {
+                "mapping": {
+                  "atomic": "#/$defs/AtomicCondition",
+                  "compound": "#/$defs/CompoundCondition",
+                  "unsupported": "#/$defs/UnsupportedCondition"
+                },
+                "propertyName": "type"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/AtomicCondition"
+                },
+                {
+                  "$ref": "#/$defs/CompoundCondition"
+                },
+                {
+                  "$ref": "#/$defs/UnsupportedCondition"
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Trigger condition (None for default/fallback)",
+          "title": "Condition"
+        },
+        "action": {
+          "description": "Resulting queue or action (e.g. 'manual_review', 'priority')",
+          "title": "Action",
+          "type": "string"
+        },
+        "raw_text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Original prose text",
+          "title": "Raw Text"
+        },
+        "is_fallback": {
+          "default": false,
+          "description": "True if this is an 'otherwise / remaining tickets' catch-all",
+          "title": "Is Fallback",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "rule_id",
+        "source",
+        "priority",
+        "action"
+      ],
+      "title": "SourceRequirement",
+      "type": "object"
+    },
+    "UnsupportedCondition": {
+      "description": "Preserves raw condition text that cannot be safely parsed into the supported domain.",
+      "properties": {
+        "type": {
+          "const": "unsupported",
+          "default": "unsupported",
+          "title": "Type",
+          "type": "string"
+        },
+        "raw_text": {
+          "description": "Original unparsed text",
+          "title": "Raw Text",
+          "type": "string"
+        },
+        "reason": {
+          "description": "Why the condition is unsupported or ambiguous",
+          "title": "Reason",
+          "type": "string"
+        },
+        "flag": {
+          "default": "UNSUPPORTED",
+          "enum": [
+            "UNSUPPORTED",
+            "AMBIGUOUS"
+          ],
+          "title": "Flag",
+          "type": "string"
+        }
+      },
+      "required": [
+        "raw_text",
+        "reason"
+      ],
+      "title": "UnsupportedCondition",
+      "type": "object"
+    }
+  },
+  "description": "A collection of business requirements representing an entire policy version.",
+  "properties": {
+    "doc_id": {
+      "description": "Identifier for requirements document",
+      "title": "Doc Id",
+      "type": "string"
+    },
+    "version": {
+      "default": 1,
+      "description": "Version of the document",
+      "title": "Version",
+      "type": "integer"
+    },
+    "title": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Title"
+    },
+    "rules": {
+      "items": {
+        "$ref": "#/$defs/SourceRequirement"
+      },
+      "title": "Rules",
+      "type": "array"
+    }
+  },
+  "required": [
+    "doc_id"
+  ],
+  "title": "RequirementsDocument",
+  "type": "object"
+}

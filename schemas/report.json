@@ -1,0 +1,155 @@
+{
+  "$defs": {
+    "Finding": {
+      "description": "An evidenced defect, inconsistency, or violation discovered during review.",
+      "properties": {
+        "finding_id": {
+          "description": "Unique finding identifier (e.g. 'FIND-001')",
+          "title": "Finding Id",
+          "type": "string"
+        },
+        "rule_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Associated requirement rule ID",
+          "title": "Rule Id"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity",
+          "description": "Severity level"
+        },
+        "issue": {
+          "description": "Clear summary of the problem (e.g., 'Incorrect threshold boundary')",
+          "title": "Issue",
+          "type": "string"
+        },
+        "expected": {
+          "description": "Expected behavior according to effective requirements",
+          "title": "Expected",
+          "type": "string"
+        },
+        "actual": {
+          "description": "Actual behavior found in spec, graph, or code",
+          "title": "Actual",
+          "type": "string"
+        },
+        "evidence": {
+          "description": "Exact location: file, line range, or node ID (e.g. 'workflow.py:3')",
+          "title": "Evidence",
+          "type": "string"
+        },
+        "counterexample": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Concrete ticket input proving the discrepancy",
+          "title": "Counterexample"
+        },
+        "correction": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Specific remediation advice",
+          "title": "Correction"
+        }
+      },
+      "required": [
+        "finding_id",
+        "severity",
+        "issue",
+        "expected",
+        "actual",
+        "evidence"
+      ],
+      "title": "Finding",
+      "type": "object"
+    },
+    "ReviewStatus": {
+      "enum": [
+        "PASS",
+        "CHANGES_REQUIRED",
+        "INCOMPLETE"
+      ],
+      "title": "ReviewStatus",
+      "type": "string"
+    },
+    "Severity": {
+      "enum": [
+        "BLOCKER",
+        "WARNING",
+        "INFO"
+      ],
+      "title": "Severity",
+      "type": "string"
+    }
+  },
+  "description": "Final comprehensive review report.",
+  "properties": {
+    "status": {
+      "$ref": "#/$defs/ReviewStatus",
+      "description": "'PASS', 'CHANGES_REQUIRED', or 'INCOMPLETE'"
+    },
+    "summary": {
+      "description": "Executive summary of the review results",
+      "title": "Summary",
+      "type": "string"
+    },
+    "findings": {
+      "description": "List of findings found",
+      "items": {
+        "$ref": "#/$defs/Finding"
+      },
+      "title": "Findings",
+      "type": "array"
+    },
+    "coverage": {
+      "additionalProperties": true,
+      "description": "Coverage statistics: total_rules, verified_rules, unreviewed_rules",
+      "title": "Coverage",
+      "type": "object"
+    },
+    "check_results": {
+      "description": "Detailed record of all individual checks run across artifacts",
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Check Results",
+      "type": "array"
+    },
+    "unreviewed_scope": {
+      "description": "Explicit disclosure of any requirements, nodes, or code left unreviewed",
+      "items": {
+        "type": "string"
+      },
+      "title": "Unreviewed Scope",
+      "type": "array"
+    }
+  },
+  "required": [
+    "status",
+    "summary"
+  ],
+  "title": "ReviewReport",
+  "type": "object"
+}

@@ -1,0 +1,97 @@
+{
+  "$defs": {
+    "ApprovalRecord": {
+      "description": "A formal change control approval record.",
+      "properties": {
+        "change_id": {
+          "description": "Unique change proposal ID (e.g. 'CHG-101')",
+          "title": "Change Id",
+          "type": "string"
+        },
+        "target_rule_id": {
+          "description": "Rule ID targeted for amendment (e.g. 'R3')",
+          "title": "Target Rule Id",
+          "type": "string"
+        },
+        "target_version": {
+          "default": 1,
+          "description": "Base rule version being modified",
+          "title": "Target Version",
+          "type": "integer"
+        },
+        "status": {
+          "$ref": "#/$defs/ApprovalStatus",
+          "description": "'APPROVED', 'REJECTED', or 'PENDING'"
+        },
+        "author": {
+          "description": "Individual or role proposing/approving change",
+          "title": "Author",
+          "type": "string"
+        },
+        "timestamp": {
+          "description": "ISO 8601 timestamp or sequence ordering key",
+          "title": "Timestamp",
+          "type": "string"
+        },
+        "patch": {
+          "additionalProperties": true,
+          "description": "Dictionary of modified fields (e.g. {'condition': {'value': 25}})",
+          "title": "Patch",
+          "type": "object"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Context, justification, or review notes",
+          "title": "Notes"
+        }
+      },
+      "required": [
+        "change_id",
+        "target_rule_id",
+        "status",
+        "author",
+        "timestamp",
+        "patch"
+      ],
+      "title": "ApprovalRecord",
+      "type": "object"
+    },
+    "ApprovalStatus": {
+      "enum": [
+        "APPROVED",
+        "REJECTED",
+        "PENDING"
+      ],
+      "title": "ApprovalStatus",
+      "type": "string"
+    }
+  },
+  "description": "Collection of approval records.",
+  "properties": {
+    "doc_id": {
+      "description": "Approval log document identifier",
+      "title": "Doc Id",
+      "type": "string"
+    },
+    "records": {
+      "items": {
+        "$ref": "#/$defs/ApprovalRecord"
+      },
+      "title": "Records",
+      "type": "array"
+    }
+  },
+  "required": [
+    "doc_id"
+  ],
+  "title": "ApprovalDocument",
+  "type": "object"
+}
