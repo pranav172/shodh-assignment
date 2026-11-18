@@ -120,7 +120,7 @@ class SourceRequirement(BaseModel):
     @property
     def evidence_location(self) -> str:
         """Formatted evidence string."""
-        if self.line_start is not None and self.line_end is not None:
+        if self.line_start is not None and self.line_end is not None and self.line_start != self.line_end:
             return f"{self.source}:{self.line_start}-{self.line_end}"
         elif self.line_start is not None:
             return f"{self.source}:{self.line_start}"
